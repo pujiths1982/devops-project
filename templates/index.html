@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DevOps Tools - Interactive Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #fff;
+      min-height: 100vh;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 50px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .tool-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1));
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+
+    .tool-card:hover::before {
+      transform: translateX(100%);
+    }
+
+    .tool-card:hover {
+      transform: translateY(-15px) scale(1.05);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .tool-card.active {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(0, 194, 255, 0.6);
+      border: 2px solid #00c2ff;
+      z-index: 10;
+    }
+
+    .tool-icon {
+      font-size: 3.5rem;
+      margin-bottom: 15px;
+      color: #00c6ff;
+      transition: all 0.3s ease;
+    }
+
+    .tool-card.active .tool-icon {
+      transform: rotate(360deg) scale(1.2);
+      color: #fff;
+    }
+
+    .tool-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .tool-desc {
+      font-size: 0.95rem;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.5s ease;
+      line-height: 1.6;
+    }
+
+    .tool-card.active .tool-desc {
+      opacity: 1;
+      max-height: 200px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .footer {
+      margin-top: 80px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.2rem; }
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>DevOps Tools Dashboard</h1>
+    <p class="subtitle">Click on any tool to explore its role in the CI/CD Pipeline</p>
+
+    <div class="tools-grid" id="toolsGrid">
+      <!-- Tools will be injected via JS -->
+    </div>
+
+    <div class="footer">
+      Project: Automated Deployment using DevOps | 24CS2018 – DevOps
+    </div>
+  </div>
+
+  <script>
+    // DevOps Tools Data from Project Manual
+    const tools = [
+      {
+        name: "Git / GitHub",
+        icon: "fab fa-github",
+        desc: "Version control and collaboration. Manage source code with branches, commits, and pull requests."
+      },
+      {
+        name: "GitHub Actions / Jenkins",
+        icon: "fas fa-code-branch",
+        desc: "Continuous Integration (CI) and Continuous Deployment (CD). Automate build, test, and deploy pipelines."
+      },
+      {
+        name: "Docker",
+        icon: "fab fa-docker",
+        desc: "Application containerization. Package app with dependencies into lightweight, portable containers."
+      },
+      {
+        name: "Kubernetes (AKS)",
+        icon: "fas fa-cubes",
+        desc: "Container orchestration on Azure. Scale, manage, and deploy containerized apps reliably."
+      },
+      {
+        name: "Azure Cloud",
+        icon: "fas fa-cloud",
+        desc: "Infrastructure hosting and management. Provides AKS, ACR, and scalable cloud resources."
+      },
+      {
+        name: "Terraform",
+        icon: "fas fa-code",
+        desc: "Infrastructure as Code (IaC). Provision Azure resources declaratively and reproducibly."
+      },
+      {
+        name: "Ansible",
+        icon: "fas fa-cogs",
+        desc: "Configuration management and automated deployment. Apply Kubernetes manifests via playbooks."
+      }
+    ];
+
+    // Render Tools
+    const toolsGrid = document.getElementById('toolsGrid');
+
+    tools.forEach((tool, index) => {
+      const card = document.createElement('div');
+      card.className = 'tool-card';
+      card.innerHTML = `
+        <i class="${tool.icon} tool-icon"></i>
+        <div class="tool-name">${tool.name}</div>
+        <div class="tool-desc">${tool.desc}</div>
+      `;
+
+      // Click Animation & Toggle
+      card.addEventListener('click', () => {
+        const isActive = card.classList.contains('active');
+        
+        // Remove active from all
+        document.querySelectorAll('.tool-card').forEach(c => {
+          c.classList.remove('active');
+          c.querySelector('.tool-desc').style.opacity = '0';
+          c.querySelector('.tool-desc').style.maxHeight = '0';
+        });
+
+        // Toggle current
+        if (!isActive) {
+          card.classList.add('active');
+          setTimeout(() => {
+            card.querySelector('.tool-desc').style.opacity = '1';
+            card.querySelector('.tool-desc').style.maxHeight = '200px';
+          }, 100);
+        }
+      });
+
+      toolsGrid.appendChild(card);
+    });
+
+    // Optional: Auto-highlight first tool on load
+    setTimeout(() => {
+      const firstCard = document.querySelector('.tool-card');
+      if (firstCard) firstCard.click();
+    }, 800);
+  </script>
+
+</body>
+</html>
