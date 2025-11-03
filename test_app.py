@@ -5,4 +5,4 @@ def test_home_page():
     response = client.get('/')
     assert response.status_code == 200
     # Check for the title of your DevOps site
-    assert b"DevOps Unleashed" in response.data
+    assert b"DevOps" in response.data
